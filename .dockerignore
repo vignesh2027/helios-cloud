@@ -1,0 +1,15 @@
+node_modules
+.git
+.github
+dist
+.next
+out
+coverage
+*.log
+.env*
+.DS_Store
+README.md
+docs/
+charts/
+terraform/
+packages/dashboard/
