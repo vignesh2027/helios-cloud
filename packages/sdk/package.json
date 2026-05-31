@@ -1,0 +1,39 @@
+{
+  "name": "@helios-cloud/sdk",
+  "version": "0.1.0",
+  "description": "HELIOS TypeScript/JavaScript SDK",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@helios-cloud/core": "workspace:*",
+    "@helios-cloud/optimizer": "workspace:*",
+    "@helios-cloud/drift": "workspace:*",
+    "@helios-cloud/provider-aws": "workspace:*",
+    "axios": "^1.7.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "vitest": "^1.6.0",
+    "typescript": "^5.4.5"
+  },
+  "keywords": ["helios", "cloud", "aws", "infrastructure", "cost-optimization", "drift-detection"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vignesh2027/helios-cloud"
+  },
+  "license": "Apache-2.0"
+}
