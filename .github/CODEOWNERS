@@ -1,0 +1,11 @@
+# Global code owners
+* @vignesh2027
+
+# Core engine
+/packages/core/ @vignesh2027
+/packages/providers/ @vignesh2027
+
+# Infrastructure
+/terraform/ @vignesh2027
+/charts/ @vignesh2027
+/.github/ @vignesh2027
