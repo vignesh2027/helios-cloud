@@ -33,12 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build core, optimizer, drift packages first
-        run: |
-          pnpm --filter @helios-cloud/core build
-          pnpm --filter @helios-cloud/optimizer build
-          pnpm --filter @helios-cloud/drift build
-
       - name: Build dashboard (static export)
         working-directory: packages/dashboard
         run: pnpm build
