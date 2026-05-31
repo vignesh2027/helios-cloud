@@ -1,0 +1,68 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build static dashboard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build core, optimizer, drift packages first
+        run: |
+          pnpm --filter @helios-cloud/core build
+          pnpm --filter @helios-cloud/optimizer build
+          pnpm --filter @helios-cloud/drift build
+
+      - name: Build dashboard (static export)
+        working-directory: packages/dashboard
+        run: pnpm build
+        env:
+          NEXT_STATIC_EXPORT: 'true'
+          NEXT_PUBLIC_DEMO_MODE: 'true'
+          NODE_ENV: production
+
+      - name: Add .nojekyll
+        run: touch packages/dashboard/out/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/dashboard/out
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

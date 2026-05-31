@@ -12,13 +12,22 @@
 
 <br/>
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-f97316?logo=github&logoColor=white)](https://vignesh2027.github.io/helios-cloud/)
 [![CI](https://github.com/vignesh2027/helios-cloud/workflows/CI/badge.svg)](https://github.com/vignesh2027/helios-cloud/actions)
+[![Pages](https://github.com/vignesh2027/helios-cloud/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://vignesh2027.github.io/helios-cloud/)
 [![Release](https://img.shields.io/github/v/release/vignesh2027/helios-cloud?color=f97316&label=release)](https://github.com/vignesh2027/helios-cloud/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-9-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Stars](https://img.shields.io/github/stars/vignesh2027/helios-cloud?style=flat&color=fbbf24)](https://github.com/vignesh2027/helios-cloud/stargazers)
+
+</div>
+
+<div align="center">
+
+### 👉 [**Live Demo → vignesh2027.github.io/helios-cloud**](https://vignesh2027.github.io/helios-cloud/)
+*Interactive dashboard with mock AWS data — no credentials needed*
 
 </div>
 
