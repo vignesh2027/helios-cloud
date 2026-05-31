@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "helios.fullname" . }}-config
+  labels:
+    {{- include "helios.labels" . | nindent 4 }}
+data:
+  AWS_REGION: {{ .Values.aws.region | quote }}
+  LOG_LEVEL: "info"
+  HELIOS_API_URL: "http://{{ include "helios.fullname" . }}-api:{{ .Values.api.service.port }}"

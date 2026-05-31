@@ -1,0 +1,28 @@
+apiVersion: v2
+name: helios
+description: HELIOS Enterprise Cloud Infrastructure Orchestration Platform
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+keywords:
+  - cloud
+  - infrastructure
+  - aws
+  - cost-optimization
+  - drift-detection
+  - kubernetes
+
+home: https://github.com/vignesh2027/helios-cloud
+sources:
+  - https://github.com/vignesh2027/helios-cloud
+
+maintainers:
+  - name: vigneshwar
+    email: applemacbook6sep2004@gmail.com
+    url: https://github.com/vignesh2027
+
+dependencies: []
+
+annotations:
+  category: Infrastructure
