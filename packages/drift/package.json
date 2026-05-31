@@ -1,0 +1,29 @@
+{
+  "name": "@helios-cloud/drift",
+  "version": "0.1.0",
+  "description": "HELIOS infrastructure drift detection engine",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@helios-cloud/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "vitest": "^1.6.0",
+    "typescript": "^5.4.5"
+  }
+}
