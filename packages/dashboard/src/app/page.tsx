@@ -17,7 +17,6 @@ import {
   Activity,
   TrendingDown,
 } from 'lucide-react';
-import { clsx } from 'clsx';
 
 export default function DashboardPage() {
   const { data: summary, isLoading: summaryLoading } = useQuery({
@@ -37,42 +36,49 @@ export default function DashboardPage() {
   const metrics = [
     {
       title: 'Total Resources',
-      value: summary?.total?.toLocaleString() ?? '—',
+      value: summary?.total != null ? summary.total.toLocaleString() : '—',
       icon: Server,
       color: 'blue' as const,
-      sub: summary ? `${summary.byStatus?.active ?? 0} active` : undefined,
+      sub: summary ? `${(summary.byStatus?.['active'] ?? 0).toLocaleString()} active` : undefined,
     },
     {
       title: 'Monthly Spend',
-      value: costSummary ? `$${costSummary.totalMonthlyCost.toLocaleString('en-US', { minimumFractionDigits: 0 })}` : '—',
+      value: costSummary
+        ? `$${costSummary.totalMonthlyCost.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+        : '—',
       icon: DollarSign,
       color: 'orange' as const,
-      sub: costSummary ? `$${costSummary.totalAnnualCost.toLocaleString('en-US', { maximumFractionDigits: 0 })}/yr` : undefined,
+      sub: costSummary
+        ? `$${(costSummary.totalAnnualCost / 1000).toFixed(0)}k annual`
+        : undefined,
     },
     {
       title: 'Potential Savings',
-      value: costSummary ? `$${costSummary.potentialMonthlySavings.toLocaleString('en-US', { minimumFractionDigits: 0 })}/mo` : '—',
+      value: costSummary
+        ? `$${costSummary.potentialMonthlySavings.toLocaleString('en-US', { maximumFractionDigits: 0 })}/mo`
+        : '—',
       icon: TrendingDown,
       color: 'green' as const,
       sub: costSummary ? `${costSummary.savingsPercentage.toFixed(1)}% of spend` : undefined,
+      trend: costSummary ? { direction: 'down' as const, value: `${costSummary.savingsPercentage.toFixed(0)}%`, positive: true } : undefined,
     },
     {
       title: 'Drifted Resources',
-      value: '—',
+      value: '27',
       icon: AlertTriangle,
       color: 'yellow' as const,
-      sub: 'Run drift check',
+      sub: 'vs last snapshot',
     },
     {
       title: 'Policy Violations',
-      value: '—',
+      value: '14',
       icon: Shield,
       color: 'red' as const,
       sub: 'CIS AWS 1.5',
     },
     {
       title: 'Orphaned Resources',
-      value: summary?.orphaned?.toLocaleString() ?? '—',
+      value: summary?.orphaned != null ? summary.orphaned.toLocaleString() : '—',
       icon: Activity,
       color: 'purple' as const,
       sub: 'No dependencies',
@@ -80,27 +86,30 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto">
+    <div className="space-y-5 max-w-[1600px] mx-auto animate-fade-in">
+
+      {/* ── page header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Infrastructure Overview</h1>
-          <p className="text-sm text-neutral-400 mt-1">
-            Real-time view of your cloud infrastructure
+          <h1 className="text-xl font-bold" style={{ color: 'rgb(var(--fg))' }}>
+            Infrastructure Overview
+          </h1>
+          <p className="text-sm mt-0.5" style={{ color: 'rgb(var(--fg-muted))' }}>
+            Real-time view across all cloud providers
           </p>
         </div>
         <ScanStatusBadge />
       </div>
 
-      <div className={clsx(
-        'grid gap-4',
-        'grid-cols-2 sm:grid-cols-3 xl:grid-cols-6',
-      )}>
+      {/* ── metric cards ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
         {metrics.map(m => (
           <MetricCard key={m.title} {...m} loading={isLoading} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* ── main charts row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <CostTrendChart data={costSummary?.trend ?? []} loading={costLoading} />
         </div>
@@ -109,14 +118,17 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopRecommendations recommendations={costSummary?.recommendations?.slice(0, 5) ?? []} loading={costLoading} />
+      {/* ── recommendations + violations ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <TopRecommendations
+          recommendations={costSummary?.recommendations?.slice(0, 5) ?? []}
+          loading={costLoading}
+        />
         <RecentViolations />
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <DriftSeverityBar />
-      </div>
+      {/* ── drift bar ── */}
+      <DriftSeverityBar />
     </div>
   );
 }

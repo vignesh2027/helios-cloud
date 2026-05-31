@@ -1,16 +1,19 @@
 'use client';
 
 import type { CostRecommendation } from '../../lib/types';
-import { TrendingDown, ChevronRight } from 'lucide-react';
-import { clsx } from 'clsx';
+import { TrendingDown, ArrowRight, Zap } from 'lucide-react';
 
-const actionColors: Record<string, string> = {
-  rightsize: 'bg-blue-500/10 text-blue-400',
-  terminate: 'bg-red-500/10 text-red-400',
-  schedule: 'bg-purple-500/10 text-purple-400',
-  'savings-plan': 'bg-green-500/10 text-green-400',
-  'storage-tier': 'bg-yellow-500/10 text-yellow-400',
-  'delete-snapshot': 'bg-red-500/10 text-red-400',
+const ACTION_META: Record<string, { label: string; color: string; bg: string }> = {
+  'rightsize':     { label: 'RIGHTSIZE',    color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+  'terminate':     { label: 'TERMINATE',    color: '#ef4444', bg: 'rgba(239,68,68,0.1)'   },
+  'schedule':      { label: 'SCHEDULE',     color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
+  'savings-plan':  { label: 'SAVINGS PLAN', color: '#4ade80', bg: 'rgba(74,222,128,0.1)'  },
+  'storage-tier':  { label: 'STORAGE',      color: '#facc15', bg: 'rgba(250,204,21,0.1)'  },
+  'delete-snapshot':{ label: 'DELETE',      color: '#f97316', bg: 'rgba(249,115,22,0.1)'  },
+};
+
+const RISK_COLOR: Record<string, string> = {
+  low: '#4ade80', medium: '#eab308', high: '#ef4444',
 };
 
 interface TopRecommendationsProps {
@@ -20,63 +23,100 @@ interface TopRecommendationsProps {
 
 export function TopRecommendations({ recommendations, loading }: TopRecommendationsProps) {
   return (
-    <div className="bg-[#111111] border border-neutral-800 rounded-xl p-5">
+    <div className="card p-5 flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <TrendingDown className="w-4 h-4 text-green-400" />
-          <h3 className="text-sm font-semibold text-white">Top Cost Recommendations</h3>
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg" style={{ background: 'rgba(74,222,128,0.1)' }}>
+            <TrendingDown className="w-4 h-4" style={{ color: '#4ade80' }} />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold" style={{ color: 'rgb(var(--fg))' }}>
+              Cost Recommendations
+            </h3>
+            <p className="text-xs mt-0.5" style={{ color: 'rgb(var(--fg-dim))' }}>
+              Top savings opportunities
+            </p>
+          </div>
         </div>
-        <button className="text-xs text-orange-400 hover:text-orange-300 transition-colors">
-          View all →
+        <button
+          className="text-xs font-medium flex items-center gap-1"
+          style={{ color: 'rgb(var(--accent))' }}
+        >
+          View all <ArrowRight className="w-3 h-3" />
         </button>
       </div>
 
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded-lg animate-pulse" />
+            <div key={i} className="skeleton h-14 rounded-xl" />
           ))}
         </div>
       ) : recommendations.length === 0 ? (
-        <div className="text-center py-8">
-          <TrendingDown className="w-8 h-8 text-neutral-700 mx-auto mb-2" />
-          <p className="text-sm text-neutral-500">No recommendations available</p>
-          <p className="text-xs text-neutral-600 mt-1">Run a scan to analyze costs</p>
+        <div className="flex-1 flex flex-col items-center justify-center py-10">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: 'rgba(74,222,128,0.1)' }}>
+            <Zap className="w-5 h-5" style={{ color: '#4ade80' }} />
+          </div>
+          <p className="text-sm font-medium" style={{ color: 'rgb(var(--fg-muted))' }}>
+            No recommendations
+          </p>
+          <p className="text-xs mt-1" style={{ color: 'rgb(var(--fg-dim))' }}>
+            Run a scan to analyze costs
+          </p>
         </div>
       ) : (
         <div className="space-y-2">
-          {recommendations.map(rec => (
-            <div
-              key={rec.resourceId}
-              className="flex items-center justify-between p-3 bg-neutral-900/50 rounded-lg border border-neutral-800 hover:border-neutral-700 transition-all cursor-pointer group"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={clsx(
-                    'text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold',
-                    actionColors[rec.action] ?? 'bg-neutral-800 text-neutral-400',
-                  )}>
-                    {rec.action}
-                  </span>
-                  <span className="text-[11px] text-neutral-400 font-mono truncate">
-                    {rec.currentConfig} → {rec.recommendedConfig}
-                  </span>
+          {recommendations.map((rec, i) => {
+            const meta = ACTION_META[rec.action] ?? { label: rec.action.toUpperCase(), color: '#6b7280', bg: 'rgba(107,114,128,0.1)' };
+            return (
+              <div
+                key={`${rec.resourceId}-${i}`}
+                className="group flex items-center gap-3 p-3 rounded-xl transition-colors cursor-pointer"
+                style={{
+                  background: 'rgb(var(--bg-elevated))',
+                  border: '1px solid rgb(var(--border-soft))',
+                }}
+              >
+                {/* rank */}
+                <div
+                  className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-bold font-mono flex-shrink-0"
+                  style={{ background: 'rgb(var(--border))', color: 'rgb(var(--fg-dim))' }}
+                >
+                  {i + 1}
                 </div>
-                <p className="text-xs text-neutral-500 truncate">{rec.rationale}</p>
-              </div>
-              <div className="flex items-center gap-2 ml-3 flex-shrink-0">
-                <div className="text-right">
-                  <div className="text-sm font-bold font-mono text-green-400">
-                    ${rec.monthlySavings.toFixed(0)}/mo
+
+                {/* action badge */}
+                <span
+                  className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded flex-shrink-0"
+                  style={{ color: meta.color, background: meta.bg }}
+                >
+                  {meta.label}
+                </span>
+
+                {/* desc */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] font-mono truncate" style={{ color: 'rgb(var(--fg-muted))' }}>
+                    {rec.currentConfig}
+                    <span className="mx-1" style={{ color: 'rgb(var(--fg-dim))' }}>→</span>
+                    {rec.recommendedConfig}
                   </div>
-                  <div className="text-[10px] text-neutral-600">
-                    {(rec.confidenceScore * 100).toFixed(0)}% conf
+                  <div className="text-[10px] truncate mt-0.5" style={{ color: 'rgb(var(--fg-dim))' }}>
+                    {rec.rationale.slice(0, 60)}{rec.rationale.length > 60 ? '…' : ''}
                   </div>
                 </div>
-                <ChevronRight className="w-3 h-3 text-neutral-600 group-hover:text-neutral-400 transition-colors" />
+
+                {/* savings */}
+                <div className="text-right flex-shrink-0">
+                  <div className="text-sm font-bold font-mono" style={{ color: '#4ade80' }}>
+                    ${rec.monthlySavings.toFixed(0)}
+                  </div>
+                  <div className="text-[9px] font-mono" style={{ color: 'rgb(var(--fg-dim))' }}>
+                    /mo · <span style={{ color: RISK_COLOR[rec.risk] ?? '#6b7280' }}>{rec.risk} risk</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

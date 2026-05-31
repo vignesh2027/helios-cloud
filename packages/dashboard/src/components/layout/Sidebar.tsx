@@ -13,19 +13,21 @@ import {
   Settings,
   BookOpen,
   Zap,
+  Activity,
 } from 'lucide-react';
 
 const nav = [
-  { href: '/', label: 'Overview', icon: LayoutDashboard },
-  { href: '/resources', label: 'Resources', icon: Server },
-  { href: '/cost', label: 'Cost Optimizer', icon: DollarSign },
-  { href: '/drift', label: 'Drift Detection', icon: AlertTriangle },
-  { href: '/policy', label: 'Compliance', icon: Shield },
-  { href: '/topology', label: 'Topology', icon: Network },
+  { href: '/',          label: 'Overview',     icon: LayoutDashboard },
+  { href: '/resources', label: 'Resources',    icon: Server },
+  { href: '/cost',      label: 'Cost Optimizer', icon: DollarSign },
+  { href: '/drift',     label: 'Drift',        icon: AlertTriangle },
+  { href: '/policy',    label: 'Compliance',   icon: Shield },
+  { href: '/topology',  label: 'Topology',     icon: Network },
+  { href: '/activity',  label: 'Activity',     icon: Activity },
 ];
 
 const secondaryNav = [
-  { href: '/docs', label: 'API Docs', icon: BookOpen },
+  { href: '/docs',     label: 'API Docs', icon: BookOpen },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -33,58 +35,52 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-56 flex flex-col flex-shrink-0 bg-[#111111] border-r border-neutral-800">
-      <div className="p-4 border-b border-neutral-800">
+    <aside className="sidebar w-56 flex flex-col flex-shrink-0">
+      {/* logo */}
+      <div className="p-4" style={{ borderBottom: '1px solid rgb(var(--border))' }}>
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-yellow-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center shadow-md">
             <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
           </div>
           <div>
-            <div className="text-sm font-bold text-white tracking-wide">HELIOS</div>
-            <div className="text-[10px] text-neutral-500 font-mono">v0.1.0</div>
+            <div className="text-sm font-bold text-fg tracking-wide" style={{ color: 'rgb(var(--fg))' }}>
+              HELIOS
+            </div>
+            <div className="text-[10px] font-mono" style={{ color: 'rgb(var(--fg-dim))' }}>
+              v0.1.0 · aws
+            </div>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-3 space-y-0.5">
-        <div className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest px-2 py-2">
+      {/* nav */}
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <div
+          className="text-[10px] font-semibold uppercase tracking-widest px-2 py-2"
+          style={{ color: 'rgb(var(--fg-dim))' }}
+        >
           Platform
         </div>
         {nav.map(item => {
           const active = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={clsx(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                active
-                  ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5',
-              )}
-            >
+            <Link key={item.href} href={item.href} className={clsx('nav-item', active && 'active')}>
               <item.icon className="w-4 h-4 flex-shrink-0" />
               {item.label}
             </Link>
           );
         })}
 
-        <div className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest px-2 py-2 mt-4">
+        <div
+          className="text-[10px] font-semibold uppercase tracking-widest px-2 py-2 mt-4"
+          style={{ color: 'rgb(var(--fg-dim))' }}
+        >
           System
         </div>
         {secondaryNav.map(item => {
           const active = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={clsx(
-                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                active
-                  ? 'bg-orange-500/10 text-orange-400'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5',
-              )}
-            >
+            <Link key={item.href} href={item.href} className={clsx('nav-item', active && 'active')}>
               <item.icon className="w-4 h-4 flex-shrink-0" />
               {item.label}
             </Link>
@@ -92,14 +88,19 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-neutral-800">
+      {/* user */}
+      <div className="p-3" style={{ borderTop: '1px solid rgb(var(--border))' }}>
         <div className="flex items-center gap-2 px-2 py-1.5">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center text-[10px] font-bold text-white">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0">
             V
           </div>
           <div className="min-w-0">
-            <div className="text-xs font-medium text-white truncate">Vigneshwar L</div>
-            <div className="text-[10px] text-neutral-500 truncate">Admin</div>
+            <div className="text-xs font-semibold truncate" style={{ color: 'rgb(var(--fg))' }}>
+              Vigneshwar L
+            </div>
+            <div className="text-[10px] font-mono truncate" style={{ color: 'rgb(var(--fg-dim))' }}>
+              Platform Admin
+            </div>
           </div>
         </div>
       </div>

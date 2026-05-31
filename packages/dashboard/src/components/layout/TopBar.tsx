@@ -3,53 +3,69 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { heliosApi } from '../../lib/api';
-import { RefreshCw, Bell, Search, ChevronDown } from 'lucide-react';
+import { useThemeStore } from '../../lib/theme-store';
+import { RefreshCw, Bell, Search, ChevronDown, Sun, Moon, Globe } from 'lucide-react';
 import { clsx } from 'clsx';
+
+const REGIONS = ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-southeast-1', 'ap-northeast-1'];
 
 export function TopBar() {
   const queryClient = useQueryClient();
   const [region, setRegion] = useState('us-east-1');
+  const { theme, toggle } = useThemeStore();
 
   const scanMutation = useMutation({
     mutationFn: () => heliosApi.triggerScan(),
-    onSuccess: () => {
-      setTimeout(() => queryClient.invalidateQueries(), 5000);
-    },
+    onSuccess: () => setTimeout(() => queryClient.invalidateQueries(), 5000),
   });
 
-  const regions = ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-southeast-1'];
-
   return (
-    <header className="h-14 flex items-center justify-between px-6 bg-[#111111] border-b border-neutral-800 flex-shrink-0">
+    <header className="topbar h-14 flex items-center justify-between px-5 flex-shrink-0">
+      {/* left */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-500" />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+            style={{ color: 'rgb(var(--fg-dim))' }}
+          />
           <input
             type="text"
-            placeholder="Search resources..."
-            className="pl-9 pr-4 py-1.5 bg-neutral-900 border border-neutral-700 rounded-lg text-sm text-neutral-300 placeholder-neutral-500 focus:outline-none focus:border-orange-500/50 w-64"
+            placeholder="Search resources, regions, types…"
+            className="input-base pl-9 pr-4 py-1.5 text-sm w-72"
           />
         </div>
 
-        <div className="relative">
+        <div className="relative flex items-center gap-1.5 input-base px-3 py-1.5">
+          <Globe className="w-3.5 h-3.5" style={{ color: 'rgb(var(--fg-dim))' }} />
           <select
             value={region}
             onChange={e => setRegion(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-1.5 bg-neutral-900 border border-neutral-700 rounded-lg text-sm text-neutral-300 focus:outline-none focus:border-orange-500/50"
+            className="appearance-none bg-transparent text-sm pr-5 focus:outline-none cursor-pointer"
+            style={{ color: 'rgb(var(--fg))' }}
           >
-            {regions.map(r => (
-              <option key={r} value={r}>{r}</option>
-            ))}
+            {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-neutral-500 pointer-events-none" />
+          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: 'rgb(var(--fg-dim))' }} />
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* right */}
+      <div className="flex items-center gap-2">
+        {/* theme toggle */}
+        <button
+          onClick={toggle}
+          className="theme-toggle"
+          title={theme === 'dark' ? 'Switch to warm white' : 'Switch to dark'}
+        >
+          {theme === 'dark'
+            ? <Sun className="w-4 h-4" />
+            : <Moon className="w-4 h-4" />}
+        </button>
+
         <button
           onClick={() => queryClient.invalidateQueries()}
-          className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/5 transition-all"
-          title="Refresh data"
+          className="theme-toggle"
+          title="Refresh"
         >
           <RefreshCw className="w-4 h-4" />
         </button>
@@ -57,29 +73,34 @@ export function TopBar() {
         <button
           onClick={() => scanMutation.mutate()}
           disabled={scanMutation.isPending}
-          className={clsx(
-            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all',
-            scanMutation.isPending
-              ? 'bg-orange-500/50 text-orange-200 cursor-not-allowed'
-              : 'bg-orange-500 text-white hover:bg-orange-600',
-          )}
+          className="btn-primary"
         >
           <RefreshCw className={clsx('w-3.5 h-3.5', scanMutation.isPending && 'animate-spin')} />
-          {scanMutation.isPending ? 'Scanning...' : 'Scan Now'}
+          {scanMutation.isPending ? 'Scanning…' : 'Scan Now'}
         </button>
 
-        <button className="relative p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/5 transition-all">
+        <button className="relative theme-toggle">
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-orange-500 rounded-full" />
+          <span
+            className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full"
+            style={{ background: 'rgb(var(--accent))' }}
+          />
         </button>
 
-        <div className="w-px h-5 bg-neutral-700" />
+        <div className="w-px h-5" style={{ background: 'rgb(var(--border))' }} />
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-neutral-500 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-700">
-            AWS
-          </span>
-          <span className="text-xs text-neutral-400">us-east-1</span>
+        {/* account badge */}
+        <div
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono"
+          style={{
+            background: 'rgb(var(--bg-elevated))',
+            border: '1px solid rgb(var(--border))',
+            color: 'rgb(var(--fg-muted))',
+          }}
+        >
+          <span className="font-bold" style={{ color: '#FF9900' }}>AWS</span>
+          <span style={{ color: 'rgb(var(--fg-dim))' }}>·</span>
+          {region}
         </div>
       </div>
     </header>

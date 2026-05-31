@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" width="860" height="520">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+      text { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; }
+
+      /* ── cursor blink ── */
+      .cursor { animation: blink 1s step-start infinite; }
+      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+      /* ── typing animations (delay chains) ── */
+      .line-0  { animation: appear 0.1s 0.3s both; }
+      .line-1  { animation: appear 0.1s 0.7s both; }
+      .line-2  { animation: appear 0.1s 0.8s both; }
+      .line-3  { animation: appear 0.1s 0.9s both; }
+      .line-4  { animation: appear 0.1s 1.0s both; }
+      .line-5  { animation: appear 0.1s 1.8s both; }
+      .line-6  { animation: appear 0.1s 2.0s both; }
+      .line-7  { animation: appear 0.1s 2.2s both; }
+      .line-8  { animation: appear 0.1s 2.4s both; }
+      .line-9  { animation: appear 0.1s 2.6s both; }
+      .line-10 { animation: appear 0.1s 2.8s both; }
+      .line-11 { animation: appear 0.1s 3.0s both; }
+      .line-12 { animation: appear 0.1s 3.2s both; }
+      .line-13 { animation: appear 0.1s 3.6s both; }
+      .line-14 { animation: appear 0.1s 3.8s both; }
+      .line-15 { animation: appear 0.1s 4.0s both; }
+      .line-16 { animation: appear 0.1s 4.2s both; }
+      .line-17 { animation: appear 0.1s 4.4s both; }
+      .line-18 { animation: appear 0.1s 4.6s both; }
+      .line-19 { animation: appear 0.1s 4.8s both; }
+      .line-20 { animation: appear 0.1s 5.0s both; }
+      .line-21 { animation: appear 0.1s 5.2s both; }
+      .line-22 { animation: appear 0.1s 5.6s both; }
+      .line-23 { animation: appear 0.1s 5.8s both; }
+      .line-24 { animation: appear 0.1s 6.0s both; }
+      .line-25 { animation: appear 0.1s 6.4s both; }
+      .line-26 { animation: appear 0.1s 6.6s both; }
+      .line-27 { animation: appear 0.1s 6.8s both; }
+      .cmd-1   { animation: typeCmd 0.6s 0.2s both steps(20,end); width: 0; overflow:hidden; white-space:nowrap; }
+      .cmd-2   { animation: typeCmd 0.5s 1.5s both steps(18,end); width: 0; overflow:hidden; white-space:nowrap; }
+      .cmd-3   { animation: typeCmd 0.5s 3.3s both steps(24,end); width: 0; overflow:hidden; white-space:nowrap; }
+      .cmd-4   { animation: typeCmd 0.5s 5.3s both steps(20,end); width: 0; overflow:hidden; white-space:nowrap; }
+      @keyframes appear { from{opacity:0} to{opacity:1} }
+      @keyframes typeCmd { from{width:0} to{width:100%} }
+    </style>
+  </defs>
+
+  <!-- terminal window -->
+  <rect width="860" height="520" rx="12" fill="#0d0d0d"/>
+
+  <!-- title bar -->
+  <rect width="860" height="44" rx="12" fill="#1a1a1a"/>
+  <rect y="32" width="860" height="12" fill="#1a1a1a"/>
+  <circle cx="22" cy="22" r="7" fill="#ff5f57"/>
+  <circle cx="44" cy="22" r="7" fill="#febc2e"/>
+  <circle cx="66" cy="22" r="7" fill="#28c840"/>
+  <text x="430" y="28" fill="#666" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">helios — cloud infrastructure platform</text>
+
+  <!-- content area -->
+  <g transform="translate(28, 68)" font-size="13.5" font-family="'JetBrains Mono', monospace">
+
+    <!-- ═══════════ BANNER ═══════════ -->
+    <text class="line-0" y="18" fill="#f97316" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ██╗  ██╗███████╗██╗     ██╗ ██████╗ ███████╗
+    </text>
+    <text class="line-0" y="31" fill="#f97316" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ██║  ██║██╔════╝██║     ██║██╔═══██╗██╔════╝
+    </text>
+    <text class="line-0" y="44" fill="#facc15" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ███████║█████╗  ██║     ██║██║   ██║███████╗
+    </text>
+    <text class="line-0" y="57" fill="#facc15" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ██╔══██║██╔══╝  ██║     ██║██║   ██║╚════██║
+    </text>
+    <text class="line-0" y="70" fill="#4ade80" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ██║  ██║███████╗███████╗██║╚██████╔╝███████║
+    </text>
+    <text class="line-0" y="83" fill="#4ade80" font-weight="bold" font-size="11" letter-spacing="0.5">
+      ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚══════╝
+    </text>
+
+    <!-- ═══════════ CMD 1: scan ═══════════ -->
+    <text y="108" fill="#a3e635">
+      <tspan fill="#4ade80">❯</tspan>
+      <tspan class="cmd-1" fill="#e2e8f0"> helios scan --provider aws</tspan>
+    </text>
+
+    <text class="line-5" y="130" fill="#60a5fa">  ⠋ Scanning aws infrastructure...</text>
+    <text class="line-6" y="148" fill="#4ade80">  ✓ Scan complete in 3.2s — <tspan fill="#fff" font-weight="bold">847 resources</tspan>, <tspan fill="#666">2,340 edges</tspan></text>
+    <text class="line-7" y="164" fill="#666">  ─────────────────────────────────────</text>
+    <text class="line-8"  y="180" fill="#94a3b8">  → <tspan fill="#f97316">ec2:instance</tspan>          <tspan fill="#fff" font-weight="bold">214</tspan></text>
+    <text class="line-9"  y="196" fill="#94a3b8">  → <tspan fill="#f97316">s3:bucket</tspan>             <tspan fill="#fff" font-weight="bold">187</tspan></text>
+    <text class="line-10" y="212" fill="#94a3b8">  → <tspan fill="#f97316">lambda:function</tspan>       <tspan fill="#fff" font-weight="bold">143</tspan></text>
+    <text class="line-11" y="228" fill="#94a3b8">  → <tspan fill="#f97316">rds:db-instance</tspan>       <tspan fill="#fff" font-weight="bold">42</tspan></text>
+    <text class="line-12" y="244" fill="#94a3b8">  → <tspan fill="#f97316">ec2:security-group</tspan>    <tspan fill="#fff" font-weight="bold">261</tspan></text>
+
+    <!-- ═══════════ CMD 2: optimize ═══════════ -->
+    <text y="268">
+      <tspan fill="#4ade80">❯</tspan>
+      <tspan class="cmd-2" fill="#e2e8f0"> helios optimize --top 3</tspan>
+    </text>
+
+    <text class="line-13" y="290" fill="#94a3b8">  Total monthly cost:        <tspan fill="#facc15" font-weight="bold">$24,810</tspan></text>
+    <text class="line-14" y="306" fill="#94a3b8">  Potential monthly savings:  <tspan fill="#4ade80" font-weight="bold">$5,412  (21.8%)</tspan></text>
+    <text class="line-15" y="322" fill="#666">  ─────────────────────────────────────────────────────</text>
+    <text class="line-16" y="338" fill="#94a3b8">  <tspan fill="#60a5fa">rightsize</tspan>  i-0abc123 m5.2xlarge → m5.large   <tspan fill="#4ade80" font-weight="bold">$207/mo</tspan>  <tspan fill="#666">97% conf</tspan></text>
+    <text class="line-17" y="354" fill="#94a3b8">  <tspan fill="#ef4444">terminate</tspan>  i-0def456 idle 31d                 <tspan fill="#4ade80" font-weight="bold">$138/mo</tspan>  <tspan fill="#666">95% conf</tspan></text>
+    <text class="line-18" y="370" fill="#94a3b8">  <tspan fill="#a78bfa">savings-plan</tspan>  i-0ghi789 ON_DEMAND → 1yr     <tspan fill="#4ade80" font-weight="bold">$102/mo</tspan>  <tspan fill="#666">90% conf</tspan></text>
+
+    <!-- ═══════════ CMD 3: drift ═══════════ -->
+    <text y="394">
+      <tspan fill="#4ade80">❯</tspan>
+      <tspan class="cmd-3" fill="#e2e8f0"> helios drift --state-file ./prod.tfstate</tspan>
+    </text>
+
+    <text class="line-22" y="416" fill="#facc15">  ⚠  <tspan font-weight="bold">7 drifted resources</tspan> detected</text>
+    <text class="line-23" y="432" fill="#94a3b8">  critical <tspan fill="#ef4444" font-weight="bold">2</tspan>  high <tspan fill="#f97316" font-weight="bold">3</tspan>  medium <tspan fill="#facc15" font-weight="bold">2</tspan>  low <tspan fill="#666">0</tspan></text>
+    <text class="line-24" y="448" fill="#94a3b8">  i-0abc123  ec2:instance  <tspan fill="#ef4444">config-changed</tspan>  instance_type drift</text>
+
+    <!-- ═══════════ CMD 4: policy ═══════════ -->
+    <text y="468">
+      <tspan fill="#4ade80">❯</tspan>
+      <tspan class="cmd-4" fill="#e2e8f0"> helios policy check --framework cis-aws-1.5</tspan>
+    </text>
+
+    <text class="line-25" y="488" fill="#4ade80">  ✓ IAM root MFA enabled  ✓ CloudTrail enabled  ✓ VPC flow logs</text>
+    <text class="line-26" y="504" fill="#ef4444">  ✗ Access keys &gt;90 days (3)  ✗ Public S3 buckets (2)</text>
+    <text class="line-27" y="520" fill="#94a3b8">  CIS Benchmark Score: <tspan fill="#facc15" font-weight="bold">87/100</tspan>  Grade: <tspan fill="#4ade80" font-weight="bold">B+</tspan></text>
+  </g>
+</svg>
