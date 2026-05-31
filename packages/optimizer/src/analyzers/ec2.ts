@@ -34,7 +34,7 @@ export function analyzeEC2Instances(
 
     if (!m) {
       if (currentCost > 0) {
-        recommendations.push(buildTaggingRecommendation(resource, currentCost));
+        recommendations.push(buildScheduleRecommendation(resource, currentCost));
       }
       continue;
     }
@@ -42,27 +42,7 @@ export function analyzeEC2Instances(
     if (m.idleDays >= idleThresholdDays) {
       const confidence = Math.min(0.95, 0.7 + (m.idleDays - idleThresholdDays) * 0.01);
       if (confidence >= confidenceThreshold) {
-        recommendations.push({
-          resourceId: resource.id,
-          resourceType: resource.type,
-          region: resource.region,
-          action: 'terminate',
-          currentConfig: instanceType,
-          recommendedConfig: 'none (terminate)',
-          currentMonthlyCost: currentCost,
-          projectedMonthlyCost: 0,
-          monthlySavings: currentCost,
-          annualSavings: currentCost * 12,
-          confidenceScore: confidence,
-          rationale: `Instance has been idle for ${m.idleDays} days (CPU avg: ${m.avgCpuPercent.toFixed(1)}%)`,
-          effort: 'low',
-          risk: 'medium',
-          implementationSteps: [
-            'Create AMI snapshot before termination',
-            `Run: aws ec2 terminate-instances --instance-ids ${resource.id}`,
-            'Update any load balancer target groups',
-          ],
-        });
+        recommendations.push(buildTerminateRecommendation(resource, instanceType, currentCost, m));
         continue;
       }
     }
@@ -75,54 +55,85 @@ export function analyzeEC2Instances(
         if (savings > 10) {
           const confidence = calculateRightsizingConfidence(m);
           if (confidence >= confidenceThreshold) {
-            recommendations.push({
-              resourceId: resource.id,
-              resourceType: resource.type,
-              region: resource.region,
-              action: 'rightsize',
-              currentConfig: instanceType,
-              recommendedConfig: smallerType,
-              currentMonthlyCost: currentCost,
-              projectedMonthlyCost: newCost,
-              monthlySavings: savings,
-              annualSavings: savings * 12,
-              confidenceScore: confidence,
-              rationale: `Average CPU utilization is ${m.avgCpuPercent.toFixed(1)}%, max is ${m.maxCpuPercent.toFixed(1)}%. Downsize to ${smallerType}.`,
-              effort: 'medium',
-              risk: 'low',
-              implementationSteps: [
-                'Create snapshot/AMI of current instance',
-                'Stop instance during maintenance window',
-                `Run: aws ec2 modify-instance-attribute --instance-id ${resource.id} --instance-type ${smallerType}`,
-                'Start instance and validate application health',
-                'Monitor for 24h before finalizing',
-              ],
-            });
+            recommendations.push(buildRightsizeRecommendation(resource, instanceType, smallerType, currentCost, newCost, m, confidence));
           }
         }
       }
     }
 
     if (m.avgCpuPercent > 85 || m.maxCpuPercent > 95) {
-      const savingsPlansRecommendation = buildSavingsPlanRecommendation(resource, currentCost);
-      recommendations.push(savingsPlansRecommendation);
+      recommendations.push(buildSavingsPlanRecommendation(resource, currentCost));
     }
   }
 
   return recommendations;
 }
 
-function calculateRightsizingConfidence(m: EC2Metrics): number {
-  let confidence = 0.5;
-  if (m.avgCpuPercent < 10) confidence += 0.25;
-  else if (m.avgCpuPercent < 20) confidence += 0.15;
-  if (m.maxCpuPercent < 30) confidence += 0.15;
-  else if (m.maxCpuPercent < 50) confidence += 0.08;
-  if (m.avgMemoryPercent !== undefined && m.avgMemoryPercent < 40) confidence += 0.1;
-  return Math.min(0.97, confidence);
+function buildTerminateRecommendation(
+  resource: Resource,
+  instanceType: string,
+  currentCost: number,
+  m: EC2Metrics,
+): CostRecommendation {
+  const confidence = Math.min(0.95, 0.7 + m.idleDays * 0.01);
+  return {
+    resourceId: resource.id,
+    resourceType: resource.type,
+    region: resource.region,
+    action: 'terminate',
+    currentConfig: instanceType,
+    recommendedConfig: 'none (terminate)',
+    currentMonthlyCost: currentCost,
+    projectedMonthlyCost: 0,
+    monthlySavings: currentCost,
+    annualSavings: currentCost * 12,
+    confidenceScore: confidence,
+    rationale: `Instance has been idle for ${m.idleDays} days (CPU avg: ${m.avgCpuPercent.toFixed(1)}%)`,
+    effort: 'low',
+    risk: 'medium',
+    implementationSteps: [
+      'Create AMI snapshot before termination',
+      `Run: aws ec2 terminate-instances --instance-ids ${resource.id}`,
+      'Update any load balancer target groups',
+    ],
+  };
 }
 
-function buildTaggingRecommendation(resource: Resource, currentCost: number): CostRecommendation {
+function buildRightsizeRecommendation(
+  resource: Resource,
+  currentType: string,
+  targetType: string,
+  currentCost: number,
+  newCost: number,
+  m: EC2Metrics,
+  confidence: number,
+): CostRecommendation {
+  return {
+    resourceId: resource.id,
+    resourceType: resource.type,
+    region: resource.region,
+    action: 'rightsize',
+    currentConfig: currentType,
+    recommendedConfig: targetType,
+    currentMonthlyCost: currentCost,
+    projectedMonthlyCost: newCost,
+    monthlySavings: currentCost - newCost,
+    annualSavings: (currentCost - newCost) * 12,
+    confidenceScore: confidence,
+    rationale: `Average CPU utilization is ${m.avgCpuPercent.toFixed(1)}%, max is ${m.maxCpuPercent.toFixed(1)}%. Downsize to ${targetType}.`,
+    effort: 'medium',
+    risk: 'low',
+    implementationSteps: [
+      'Create snapshot/AMI of current instance',
+      'Stop instance during maintenance window',
+      `Run: aws ec2 modify-instance-attribute --instance-id ${resource.id} --instance-type ${targetType}`,
+      'Start instance and validate application health',
+      'Monitor for 24h before finalizing',
+    ],
+  };
+}
+
+function buildScheduleRecommendation(resource: Resource, currentCost: number): CostRecommendation {
   return {
     resourceId: resource.id,
     resourceType: resource.type,
@@ -167,4 +178,14 @@ function buildSavingsPlanRecommendation(resource: Resource, currentCost: number)
       'Purchase Compute Savings Plan via AWS console or CLI',
     ],
   };
+}
+
+function calculateRightsizingConfidence(m: EC2Metrics): number {
+  let confidence = 0.5;
+  if (m.avgCpuPercent < 10) confidence += 0.25;
+  else if (m.avgCpuPercent < 20) confidence += 0.15;
+  if (m.maxCpuPercent < 30) confidence += 0.15;
+  else if (m.maxCpuPercent < 50) confidence += 0.08;
+  if (m.avgMemoryPercent !== undefined && m.avgMemoryPercent < 40) confidence += 0.1;
+  return Math.min(0.97, confidence);
 }

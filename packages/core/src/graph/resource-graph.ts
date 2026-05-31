@@ -11,15 +11,15 @@ export class ResourceGraph {
   private edges: DependencyEdge[] = [];
 
   addResource(resource: Resource): void {
-    if (!this.nodes.has(resource.id)) {
+    const existing = this.nodes.get(resource.id);
+    if (existing) {
+      existing.resource = resource;
+    } else {
       this.nodes.set(resource.id, {
         resource,
         inEdges: new Set(),
         outEdges: new Set(),
       });
-    } else {
-      const node = this.nodes.get(resource.id)!;
-      node.resource = resource;
     }
   }
 
@@ -53,27 +53,29 @@ export class ResourceGraph {
   }
 
   filter(filter: ResourceFilter): Resource[] {
-    return [...this.nodes.values()]
-      .map(n => n.resource)
-      .filter(r => {
-        if (filter.provider && r.provider !== filter.provider) return false;
-        if (filter.region && r.region !== filter.region) return false;
-        if (filter.accountId && r.accountId !== filter.accountId) return false;
-        if (filter.status && r.status !== filter.status) return false;
-        if (filter.type) {
-          const types = Array.isArray(filter.type) ? filter.type : [filter.type];
-          if (!types.includes(r.type)) return false;
+    const results: Resource[] = [];
+    for (const { resource: r } of this.nodes.values()) {
+      if (filter.provider && r.provider !== filter.provider) continue;
+      if (filter.region && r.region !== filter.region) continue;
+      if (filter.accountId && r.accountId !== filter.accountId) continue;
+      if (filter.status && r.status !== filter.status) continue;
+      if (filter.type) {
+        const types = Array.isArray(filter.type) ? filter.type : [filter.type];
+        if (!types.includes(r.type)) continue;
+      }
+      if (filter.tags) {
+        let tagMatch = true;
+        for (const [k, v] of Object.entries(filter.tags)) {
+          if (r.tags[k] !== v) { tagMatch = false; break; }
         }
-        if (filter.tags) {
-          for (const [k, v] of Object.entries(filter.tags)) {
-            if (r.tags[k] !== v) return false;
-          }
-        }
-        if (filter.namePattern && r.name) {
-          if (!new RegExp(filter.namePattern).test(r.name)) return false;
-        }
-        return true;
-      });
+        if (!tagMatch) continue;
+      }
+      if (filter.namePattern && r.name) {
+        if (!new RegExp(filter.namePattern).test(r.name)) continue;
+      }
+      results.push(r);
+    }
+    return results;
   }
 
   getAll(): Resource[] {
@@ -111,9 +113,13 @@ export class ResourceGraph {
   }
 
   getOrphanedResources(): Resource[] {
-    return [...this.nodes.values()]
-      .filter(n => n.inEdges.size === 0 && n.outEdges.size === 0)
-      .map(n => n.resource);
+    const orphans: Resource[] = [];
+    for (const { resource, inEdges, outEdges } of this.nodes.values()) {
+      if (inEdges.size === 0 && outEdges.size === 0) {
+        orphans.push(resource);
+      }
+    }
+    return orphans;
   }
 
   merge(other: ResourceGraph): void {
@@ -126,9 +132,6 @@ export class ResourceGraph {
   }
 
   toJSON(): { nodes: Resource[]; edges: DependencyEdge[] } {
-    return {
-      nodes: this.getAll(),
-      edges: this.edges,
-    };
+    return { nodes: this.getAll(), edges: this.edges };
   }
 }
