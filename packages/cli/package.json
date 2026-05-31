@@ -37,7 +37,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
-    "@types/cli-table3": "^0.6.4",
     "@types/gradient-string": "^1.1.6",
     "tsx": "^4.11.0",
     "vitest": "^1.6.0",
