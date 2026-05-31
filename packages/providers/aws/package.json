@@ -1,0 +1,41 @@
+{
+  "name": "@helios-cloud/provider-aws",
+  "version": "0.1.0",
+  "description": "HELIOS AWS cloud provider adapter",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@helios-cloud/core": "workspace:*",
+    "@aws-sdk/client-ec2": "^3.574.0",
+    "@aws-sdk/client-s3": "^3.574.0",
+    "@aws-sdk/client-lambda": "^3.574.0",
+    "@aws-sdk/client-rds": "^3.574.0",
+    "@aws-sdk/client-eks": "^3.574.0",
+    "@aws-sdk/client-iam": "^3.574.0",
+    "@aws-sdk/client-cost-explorer": "^3.574.0",
+    "@aws-sdk/client-cloudwatch": "^3.574.0",
+    "@aws-sdk/client-sts": "^3.574.0",
+    "@aws-sdk/credential-providers": "^3.574.0",
+    "p-limit": "^5.0.0",
+    "p-retry": "^6.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "vitest": "^1.6.0",
+    "typescript": "^5.4.5"
+  }
+}
