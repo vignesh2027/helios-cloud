@@ -123,7 +123,11 @@ pub struct ScanResult {
 }
 
 impl ScanResult {
-    pub fn new(provider: impl Into<String>, region: impl Into<String>, account_id: impl Into<String>) -> Self {
+    pub fn new(
+        provider: impl Into<String>,
+        region: impl Into<String>,
+        account_id: impl Into<String>,
+    ) -> Self {
         Self {
             provider: provider.into(),
             region: region.into(),
@@ -233,9 +237,24 @@ mod tests {
     #[test]
     fn scan_result_by_type() {
         let mut result = ScanResult::new("aws", "us-east-1", "123456789012");
-        result.resources.push(Resource::new("i-1", "ec2:instance", "us-east-1", "123456789012"));
-        result.resources.push(Resource::new("i-2", "ec2:instance", "us-east-1", "123456789012"));
-        result.resources.push(Resource::new("b-1", "s3:bucket", "us-east-1", "123456789012"));
+        result.resources.push(Resource::new(
+            "i-1",
+            "ec2:instance",
+            "us-east-1",
+            "123456789012",
+        ));
+        result.resources.push(Resource::new(
+            "i-2",
+            "ec2:instance",
+            "us-east-1",
+            "123456789012",
+        ));
+        result.resources.push(Resource::new(
+            "b-1",
+            "s3:bucket",
+            "us-east-1",
+            "123456789012",
+        ));
 
         let by_type = result.by_type();
         assert_eq!(by_type.get("ec2:instance"), Some(&2));

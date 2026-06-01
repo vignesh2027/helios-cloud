@@ -36,9 +36,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Build core (required by optimizer + drift typecheck)
+        run: pnpm --filter @helios-cloud/core build
+
       - name: Type check (non-dashboard packages)
         run: pnpm --filter @helios-cloud/core --filter @helios-cloud/optimizer --filter @helios-cloud/drift typecheck
-        continue-on-error: false
 
       - name: Lint (non-dashboard packages)
         run: pnpm --filter @helios-cloud/core --filter @helios-cloud/optimizer --filter @helios-cloud/drift lint
