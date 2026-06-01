@@ -7,9 +7,8 @@ import {
 } from './mock-data';
 
 const DEMO_MODE =
-  typeof window !== 'undefined' &&
-  (window.location.hostname.includes('github.io') ||
-    process.env['NEXT_PUBLIC_DEMO_MODE'] === 'true');
+  process.env['NEXT_PUBLIC_DEMO_MODE'] === 'true' ||
+  (typeof window !== 'undefined' && window.location.hostname.includes('github.io'));
 
 const BASE = process.env['NEXT_PUBLIC_HELIOS_API_URL'] ?? '/api/v1';
 

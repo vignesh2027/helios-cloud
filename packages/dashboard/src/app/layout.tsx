@@ -8,7 +8,7 @@ import { ThemeProvider } from '../components/layout/ThemeProvider';
 export const metadata: Metadata = {
   title: 'HELIOS — Cloud Infrastructure Platform',
   description: 'Enterprise cloud infrastructure orchestration — resource inventory, cost optimization, drift detection, and policy compliance',
-  icons: { icon: '/favicon.ico' },
+  icons: { icon: '/helios-cloud/favicon.svg', shortcut: '/helios-cloud/favicon.svg' },
   openGraph: {
     title: 'HELIOS Cloud Platform',
     description: 'Enterprise Cloud Infrastructure Orchestration',
