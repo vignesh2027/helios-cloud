@@ -40,13 +40,11 @@ export class Orchestrator {
   private readonly stateManagers: Map<string, StateManager> = new Map();
 
   constructor(private readonly opts: OrchestratorOptions) {
-    this.log = pino({
-      level: opts.config.logLevel,
-      transport:
-        process.env['NODE_ENV'] !== 'production'
-          ? { target: 'pino-pretty', options: { colorize: true } }
-          : undefined,
-    });
+    const pinoOpts: pino.LoggerOptions = { level: opts.config.logLevel };
+    if (process.env['NODE_ENV'] !== 'production') {
+      pinoOpts['transport'] = { target: 'pino-pretty', options: { colorize: true } };
+    }
+    this.log = pino(pinoOpts);
   }
 
   async scan(): Promise<ResourceGraph> {

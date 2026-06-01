@@ -14,15 +14,19 @@ import {
   BookOpen,
   Zap,
   Activity,
+  Users,
+  PiggyBank,
 } from 'lucide-react';
 
 const nav = [
   { href: '/',          label: 'Overview',     icon: LayoutDashboard },
   { href: '/resources', label: 'Resources',    icon: Server },
   { href: '/cost',      label: 'Cost Optimizer', icon: DollarSign },
+  { href: '/budget',    label: 'Budget',       icon: PiggyBank },
   { href: '/drift',     label: 'Drift',        icon: AlertTriangle },
   { href: '/policy',    label: 'Compliance',   icon: Shield },
   { href: '/topology',  label: 'Topology',     icon: Network },
+  { href: '/accounts',  label: 'Accounts',     icon: Users },
   { href: '/activity',  label: 'Activity',     icon: Activity },
 ];
 

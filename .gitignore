@@ -24,3 +24,6 @@ tmp/
 .terraform.lock.hcl
 __pycache__/
 *.pyc
+# Rust build artifacts
+target/
+Cargo.lock

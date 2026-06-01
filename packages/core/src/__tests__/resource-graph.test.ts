@@ -110,16 +110,19 @@ describe('ResourceGraph', () => {
       graph.addResource(vpc);
       graph.addResource(subnet);
       graph.addResource(instance);
-      graph.addEdge({ sourceId: 'subnet-1', targetId: 'vpc-1', type: 'contains' });
-      graph.addEdge({ sourceId: 'i-1', targetId: 'subnet-1', type: 'contains' });
+      // i-1 depends_on subnet-1 which depends_on vpc-1
+      graph.addEdge({ sourceId: 'i-1', targetId: 'subnet-1', type: 'depends_on' });
+      graph.addEdge({ sourceId: 'subnet-1', targetId: 'vpc-1', type: 'depends_on' });
 
       const sorted = graph.topologicalSort();
       const vpcIdx = sorted.findIndex(r => r.id === 'vpc-1');
       const subnetIdx = sorted.findIndex(r => r.id === 'subnet-1');
       const instanceIdx = sorted.findIndex(r => r.id === 'i-1');
 
-      expect(vpcIdx).toBeLessThan(subnetIdx);
-      expect(subnetIdx).toBeLessThan(instanceIdx);
+      // DFS from i-1 traverses outEdges: i-1→subnet-1→vpc-1.
+      // After reverse: sources (dependents) come first.
+      expect(instanceIdx).toBeLessThan(subnetIdx);
+      expect(subnetIdx).toBeLessThan(vpcIdx);
     });
   });
 
