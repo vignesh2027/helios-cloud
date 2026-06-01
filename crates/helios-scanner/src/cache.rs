@@ -13,7 +13,11 @@ struct CacheEntry<T> {
 
 impl<T> CacheEntry<T> {
     fn new(value: T, ttl: Duration) -> Self {
-        Self { value, inserted_at: Instant::now(), ttl }
+        Self {
+            value,
+            inserted_at: Instant::now(),
+            ttl,
+        }
     }
 
     fn is_expired(&self) -> bool {
@@ -155,7 +159,11 @@ mod tests {
         let cache = ScanCache::new(300);
         cache.set("live", make_scan_result("us-east-1"));
         // Manually insert with 0-TTL using set_with_ttl
-        cache.set_with_ttl("dead", make_scan_result("eu-west-1"), Duration::from_millis(0));
+        cache.set_with_ttl(
+            "dead",
+            make_scan_result("eu-west-1"),
+            Duration::from_millis(0),
+        );
         std::thread::sleep(Duration::from_millis(10));
 
         let evicted = cache.evict_expired();

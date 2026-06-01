@@ -1,8 +1,6 @@
 use anyhow::Result;
 use aws_sdk_costexplorer::{
-    types::{
-        DateInterval, Expression, GroupDefinition, GroupDefinitionType,
-    },
+    types::{DateInterval, Expression, GroupDefinition, GroupDefinitionType},
     Client,
 };
 use chrono::{Duration, Utc};
@@ -35,10 +33,7 @@ pub enum TrendDirection {
     Stable,
 }
 
-pub async fn get_monthly_cost_breakdown(
-    client: &Client,
-    months_back: u32,
-) -> Result<CostTrend> {
+pub async fn get_monthly_cost_breakdown(client: &Client, months_back: u32) -> Result<CostTrend> {
     let end = Utc::now();
     let start = end - Duration::days((months_back * 30) as i64);
 
@@ -109,7 +104,11 @@ pub async fn get_monthly_cost_breakdown(
     let trend_direction = if periods.len() >= 2 {
         let first = periods.first().map(|p| p.total_usd).unwrap_or(0.0);
         let last = periods.last().map(|p| p.total_usd).unwrap_or(0.0);
-        let pct = if first > 0.0 { (last - first) / first * 100.0 } else { 0.0 };
+        let pct = if first > 0.0 {
+            (last - first) / first * 100.0
+        } else {
+            0.0
+        };
 
         if pct > 5.0 {
             TrendDirection::Increasing
@@ -125,7 +124,11 @@ pub async fn get_monthly_cost_breakdown(
     let trend_percent = if periods.len() >= 2 {
         let first = periods.first().map(|p| p.total_usd).unwrap_or(0.0);
         let last = periods.last().map(|p| p.total_usd).unwrap_or(0.0);
-        if first > 0.0 { (last - first) / first * 100.0 } else { 0.0 }
+        if first > 0.0 {
+            (last - first) / first * 100.0
+        } else {
+            0.0
+        }
     } else {
         0.0
     };
@@ -145,12 +148,26 @@ mod tests {
     #[test]
     fn trend_direction_increasing() {
         let periods = vec![
-            CostBreakdown { period_start: "2026-01-01".into(), period_end: "2026-02-01".into(), total_usd: 1000.0, by_service: HashMap::new(), by_region: HashMap::new(), by_usage_type: HashMap::new() },
-            CostBreakdown { period_start: "2026-02-01".into(), period_end: "2026-03-01".into(), total_usd: 1200.0, by_service: HashMap::new(), by_region: HashMap::new(), by_usage_type: HashMap::new() },
+            CostBreakdown {
+                period_start: "2026-01-01".into(),
+                period_end: "2026-02-01".into(),
+                total_usd: 1000.0,
+                by_service: HashMap::new(),
+                by_region: HashMap::new(),
+                by_usage_type: HashMap::new(),
+            },
+            CostBreakdown {
+                period_start: "2026-02-01".into(),
+                period_end: "2026-03-01".into(),
+                total_usd: 1200.0,
+                by_service: HashMap::new(),
+                by_region: HashMap::new(),
+                by_usage_type: HashMap::new(),
+            },
         ];
         let first = periods.first().map(|p| p.total_usd).unwrap_or(0.0);
-        let last  = periods.last().map(|p| p.total_usd).unwrap_or(0.0);
-        let pct   = (last - first) / first * 100.0;
+        let last = periods.last().map(|p| p.total_usd).unwrap_or(0.0);
+        let pct = (last - first) / first * 100.0;
         assert!(pct > 5.0);
     }
 

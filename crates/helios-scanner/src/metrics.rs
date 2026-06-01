@@ -1,8 +1,7 @@
 use anyhow::Result;
 use prometheus::{
-    register_gauge_vec, register_histogram_vec, register_int_counter_vec,
-    register_int_gauge_vec, Encoder, GaugeVec, HistogramVec, IntCounterVec,
-    IntGaugeVec, TextEncoder,
+    register_gauge_vec, register_histogram_vec, register_int_counter_vec, register_int_gauge_vec,
+    Encoder, GaugeVec, HistogramVec, IntCounterVec, IntGaugeVec, TextEncoder,
 };
 use std::sync::OnceLock;
 
@@ -90,27 +89,37 @@ pub fn init_metrics() {
     });
 }
 
-pub fn record_resource_count(provider: &str, region: &str, resource_type: &str, status: &str, count: i64) {
+pub fn record_resource_count(
+    provider: &str,
+    region: &str,
+    resource_type: &str,
+    status: &str,
+    count: i64,
+) {
     if let Some(m) = RESOURCES_TOTAL.get() {
-        m.with_label_values(&[provider, region, resource_type, status]).set(count);
+        m.with_label_values(&[provider, region, resource_type, status])
+            .set(count);
     }
 }
 
 pub fn record_scan_duration(provider: &str, region: &str, duration_secs: f64) {
     if let Some(m) = SCAN_DURATION_SECONDS.get() {
-        m.with_label_values(&[provider, region]).observe(duration_secs);
+        m.with_label_values(&[provider, region])
+            .observe(duration_secs);
     }
 }
 
 pub fn record_scan_error(provider: &str, region: &str, resource_type: &str) {
     if let Some(m) = SCAN_ERRORS_TOTAL.get() {
-        m.with_label_values(&[provider, region, resource_type]).inc();
+        m.with_label_values(&[provider, region, resource_type])
+            .inc();
     }
 }
 
 pub fn record_monthly_cost(provider: &str, region: &str, resource_type: &str, cost_usd: f64) {
     if let Some(m) = MONTHLY_COST_USD.get() {
-        m.with_label_values(&[provider, region, resource_type]).set(cost_usd);
+        m.with_label_values(&[provider, region, resource_type])
+            .set(cost_usd);
     }
 }
 

@@ -3,8 +3,8 @@ use aws_config::BehaviorVersion;
 use std::time::Instant;
 use tracing::{info, warn};
 
-use crate::models::{ScanResult};
 use super::ec2;
+use crate::models::ScanResult;
 
 #[derive(Debug, Clone)]
 pub struct ScanOptions {
@@ -23,10 +23,7 @@ impl Default for ScanOptions {
             account_id: String::new(),
             profile: None,
             role_arn: None,
-            enabled_services: vec![
-                "ec2:instance".into(),
-                "ec2:security-group".into(),
-            ],
+            enabled_services: vec!["ec2:instance".into(), "ec2:security-group".into()],
             max_concurrent_regions: 4,
         }
     }
@@ -57,7 +54,12 @@ impl AwsScanner {
 
         let mut result = ScanResult::new("aws", region, &self.opts.account_id);
 
-        if self.opts.enabled_services.iter().any(|s| s == "ec2:instance") {
+        if self
+            .opts
+            .enabled_services
+            .iter()
+            .any(|s| s == "ec2:instance")
+        {
             match ec2::scan_instances(&ec2_client, region, &self.opts.account_id).await {
                 Ok((instances, edges)) => {
                     info!("Found {} instances in {region}", instances.len());
@@ -75,7 +77,12 @@ impl AwsScanner {
             }
         }
 
-        if self.opts.enabled_services.iter().any(|s| s == "ec2:security-group") {
+        if self
+            .opts
+            .enabled_services
+            .iter()
+            .any(|s| s == "ec2:security-group")
+        {
             match ec2::scan_security_groups(&ec2_client, region, &self.opts.account_id).await {
                 Ok(sgs) => {
                     info!("Found {} security groups in {region}", sgs.len());

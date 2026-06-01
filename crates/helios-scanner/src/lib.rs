@@ -10,4 +10,4 @@ pub mod metrics;
 pub mod models;
 pub mod server;
 
-pub use models::{Resource, ResourceStatus, ScanResult, MetricsSnapshot};
+pub use models::{MetricsSnapshot, Resource, ResourceStatus, ScanResult};

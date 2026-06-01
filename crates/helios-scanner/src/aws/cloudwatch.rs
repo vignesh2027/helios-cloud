@@ -47,12 +47,12 @@ pub async fn get_instance_metrics(
     let resp = client
         .get_metric_data()
         .metric_data_queries(query)
-        .start_time(
-            aws_sdk_cloudwatch::primitives::DateTime::from_secs(start_time.timestamp()),
-        )
-        .end_time(
-            aws_sdk_cloudwatch::primitives::DateTime::from_secs(end_time.timestamp()),
-        )
+        .start_time(aws_sdk_cloudwatch::primitives::DateTime::from_secs(
+            start_time.timestamp(),
+        ))
+        .end_time(aws_sdk_cloudwatch::primitives::DateTime::from_secs(
+            end_time.timestamp(),
+        ))
         .send()
         .await;
 

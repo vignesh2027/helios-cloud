@@ -4,9 +4,7 @@ use tracing::{debug, warn};
 
 use crate::models::{DependencyEdge, EdgeType, Resource, ResourceStatus};
 
-fn tags_to_map(
-    tags: &[aws_sdk_ec2::types::Tag],
-) -> std::collections::HashMap<String, String> {
+fn tags_to_map(tags: &[aws_sdk_ec2::types::Tag]) -> std::collections::HashMap<String, String> {
     tags.iter()
         .filter_map(|t| Some((t.key.clone()?, t.value.clone()?)))
         .collect()
@@ -53,20 +51,17 @@ pub async fn scan_instances(
 
         for reservation in resp.reservations() {
             for instance in reservation.instances() {
-                let Some(instance_id) = instance.instance_id() else { continue };
+                let Some(instance_id) = instance.instance_id() else {
+                    continue;
+                };
 
                 let tags = instance.tags();
                 let name = name_from_tags(tags);
                 let tag_map = tags_to_map(tags);
 
-                let state_name = instance
-                    .state()
-                    .and_then(|s| s.name())
-                    .map(|n| n.as_str());
+                let state_name = instance.state().and_then(|s| s.name()).map(|n| n.as_str());
 
-                let arn = format!(
-                    "arn:aws:ec2:{region}:{account_id}:instance/{instance_id}"
-                );
+                let arn = format!("arn:aws:ec2:{region}:{account_id}:instance/{instance_id}");
 
                 let metadata = serde_json::json!({
                     "instanceType": instance.instance_type().map(|t| t.as_str()),
@@ -158,7 +153,9 @@ pub async fn scan_security_groups(
             let Some(sg_id) = sg.group_id() else { continue };
 
             let has_public_ingress = sg.ip_permissions().iter().any(|p| {
-                p.ip_ranges().iter().any(|r| r.cidr_ip() == Some("0.0.0.0/0"))
+                p.ip_ranges()
+                    .iter()
+                    .any(|r| r.cidr_ip() == Some("0.0.0.0/0"))
                     || p.ipv6_ranges()
                         .iter()
                         .any(|r| r.cidr_ipv6() == Some("::/0"))
